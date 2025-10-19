@@ -5,7 +5,7 @@ namespace Riyad\Polysms;
 use Riyad\Polysms\Contracts\SmsManagerContract;
 use Riyad\Polysms\Contracts\GatewayContract;
 use Riyad\Polysms\Contracts\GatewayRegistryContract;
-use Riyad\Polysms\DTO\SmsDTO;
+use Riyad\Polysms\DTO\BaseDTO;
 use Riyad\Polysms\DTO\SmsResult;
 use Riyad\Polysms\Constants\Hook;
 use Riyad\Polysms\Constants\HookReturnMode;
@@ -142,12 +142,12 @@ class SmsManager implements SmsManagerContract
      * @return SmsResult
      * @throws \RuntimeException if no gateway is selected or DTO is invalid
      */
-    public function send(SmsDTO $dto): SmsResult
+    public function send(BaseDTO $dto): SmsResult
     {
         $this->ensureGatewayIsSelected();
 
-        if (!$dto instanceof SmsDTO) {
-            throw new \RuntimeException("Provided DTO must return an instance of SmsDTO");
+        if (!$dto instanceof BaseDTO) {
+            throw new \RuntimeException("Provided DTO must return an instance of BaseDTO");
         }
 
         // Execute beforeSmsSent hook

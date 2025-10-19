@@ -4,7 +4,7 @@ namespace Riyad\Polysms\Contracts;
 
 use Riyad\Polysms\Contracts\GatewayContract;
 use Riyad\Polysms\Contracts\BeforeSmsSentContract;
-use Riyad\Polysms\DTO\SmsDTO;
+use Riyad\Polysms\DTO\BaseDTO;
 use Riyad\Polysms\DTO\SmsResult;
 
 
@@ -22,7 +22,7 @@ interface SmsManagerContract
     public function getGateway(string $gateway) : GatewayContract;
 
 
-    public function send(SmsDTO $dto): SmsResult;
+    public function send(BaseDTO $dto): SmsResult;
 
 
     public function map(callable $callback): array;

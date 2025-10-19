@@ -2,7 +2,7 @@
 
 namespace Riyad\Polysms\Contracts;
 
-use Riyad\Polysms\DTO\SmsDTO;
+use Riyad\Polysms\DTO\BaseDTO;
 
 /**
  * Interface BeforeSmsSentContract
@@ -24,5 +24,5 @@ interface BeforeSmsSentContract
      *
      * @throws \RuntimeException If pre-processing fails or validation errors occur
      */
-    public function handle(SmsDTO $dto, string $gatewayName): SmsDTO;
+    public function handle(BaseDTO $dto, string $gatewayName): BaseDTO;
 }

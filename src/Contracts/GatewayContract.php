@@ -2,7 +2,7 @@
 
 namespace Riyad\Polysms\Contracts;
 
-use Riyad\Polysms\DTO\SmsDTO;
+use Riyad\Polysms\DTO\BaseDTO;
 use Riyad\Polysms\DTO\SmsResult;
 use Riyad\Polysms\DTO\Config;
 
@@ -12,5 +12,5 @@ interface GatewayContract
 
     public function config(): Config;
 
-    public function send(SmsDTO $dto): SmsResult;
+    public function send(BaseDTO $dto): SmsResult;
 }

@@ -4,20 +4,23 @@ namespace Riyad\Polysms\Gateways;
 
 use Riyad\Polysms\AbstractGateway;
 use Riyad\Polysms\DTO\Config;
-use Riyad\Polysms\DTO\SmsDTO;
+use Riyad\Polysms\DTO\BaseDTO;
 use Riyad\Polysms\DTO\SmsResult;
 use Riyad\Polysms\GatewayRegistry;
 
-class GioSms extends AbstractGateway
+class Gennet extends AbstractGateway
 {
     private string $baseUrl;
+    private string $apiKey;
+
 
     public function __construct()
     {
         $paystationGateway = GatewayRegistry::instance();
         $metaData = $paystationGateway->getMeta($this->name())['config'];
 
-        $this->baseUrl = 'https://api.paystation.com.bd';
+        $this->baseUrl = 'https://gbarta.gennet.com.bd/api/v1';
+        $this->apiKey = $metaData->apiKey;
     }
 
 
@@ -37,33 +40,33 @@ class GioSms extends AbstractGateway
     }
 
 
-    public function send(SmsDTO $dto): SmsResult 
+    public function send(BaseDTO $dto): SmsResult 
     {
         $data = [
-            // 'merchantId'      => $this->merchantId,
-            // 'password'        => $this->password,
+            'api_key'     => $this->apiKey,
+            'type'        => $dto->type ?? 'text',
+            'senderid'    => $dto->senderId,
+            'msg'         => $dto->message,
+            'numbers'     => $dto->to,
         ];
 
-        var_dump($dto);
-
-        die();
 
         try {
                          
             $response = $this->apiCall($data);
 
-            // if($response){
-            //     return new SmsResult([
-            //         'success' => false,
-            //         'message' => 'Failed to created payment links',
-            //         'gatewayResponse' => $response,
-            //         'gateway' => $this->name(),
-            //     ]);
-            // }
+            if($response['error'] ?? false && $response['error'] === true){
+                return new SmsResult([
+                    'success' => false,
+                    'message' => 'Error',
+                    'gatewayResponse' => $response,
+                    'gateway' => $this->name(),
+                ]);
+            }
 
             return new SmsResult([
                 'success' => true,
-                'message' => 'Successfully payment link created',
+                'message' => 'Sms successfully submited to gennet server.',
                 'gatewayResponse' => $response,
                 'gateway' => $this->name(),
             ]);
@@ -87,7 +90,7 @@ class GioSms extends AbstractGateway
 
     private function apiCall(array $data, array $headers = []): array
     {
-        $url = $this->baseUrl . '/initiate-payment';
+        $url = $this->baseUrl . '/smsapi';
 
         $curl = curl_init();
 
@@ -96,7 +99,7 @@ class GioSms extends AbstractGateway
         }
 
         // Convert POST fields to URL-encoded format if needed
-        $postFields = http_build_query($data, $headers = []);
+        $postFields = http_build_query($data);
 
         curl_setopt_array($curl, [
             CURLOPT_URL => $url,
