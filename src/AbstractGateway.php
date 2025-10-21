@@ -1,19 +1,23 @@
 <?php
 
-namespace Riyad\Polysms;
+namespace Riyad\PolySms;
 
-use Riyad\Polysms\Contracts\GatewayContract;
-use Riyad\Polysms\DTO\BaseDTO;
-use Riyad\Polysms\DTO\Config;
-use Riyad\Polysms\DTO\SmsResult;
+use Riyad\PolySms\Contracts\GatewayContract;
+use Riyad\PolySms\DTO\BaseDTO;
+use Riyad\PolySms\DTO\Config;
+use Riyad\PolySms\DTO\SmsResult;
 
 abstract class AbstractGateway implements GatewayContract
 {
     abstract public function name(): string;
 
-
     abstract public function config(): Config;
 
 
-    abstract public function send(BaseDTO $dto): SmsResult;
+    public function send(BaseDTO $dto): SmsResult
+    {
+        $className = get_class($this);
+
+        throw new UnsupportedFeatureException("'{$className}' does not support this send() method.");
+    }
 }

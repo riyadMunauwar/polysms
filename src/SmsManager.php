@@ -1,17 +1,14 @@
 <?php
 
-namespace Riyad\Polysms;
+namespace Riyad\PolySms;
 
-use Riyad\Polysms\Contracts\SmsManagerContract;
-use Riyad\Polysms\Contracts\GatewayContract;
-use Riyad\Polysms\Contracts\GatewayRegistryContract;
-use Riyad\Polysms\DTO\BaseDTO;
-use Riyad\Polysms\DTO\SmsResult;
-use Riyad\Polysms\Constants\Hook;
-use Riyad\Polysms\Constants\HookReturnMode;
-use Riyad\Polysms\Contracts\BeforeSmsSentContract;
-use Riyad\Polysms\Contracts\HookRegistryContract;
-use Riyad\Polysms\Exceptions\UnsupportedFeatureException;
+use Riyad\PolySms\Contracts\SmsManagerContract;
+use Riyad\PolySms\Contracts\GatewayContract;
+use Riyad\PolySms\Contracts\GatewayRegistryContract;
+use Riyad\PolySms\DTO\BaseDTO;
+use Riyad\PolySms\DTO\SmsResult;
+use Riyad\PolySms\Constants\Hook;
+
 
 class SmsManager implements SmsManagerContract
 {
@@ -30,29 +27,14 @@ class SmsManager implements SmsManagerContract
     private GatewayRegistryContract $registry;
 
     /**
-     * Registry of hooks for sms processing events.
-     *
-     * @var HookRegistryContract
-     */
-    private HookRegistryContract $hookRegistry;
-
-    /**
-     * Currently selected gateway for processing sms.
-     *
-     * @var GatewayContract|null
-     */
-    private ?GatewayContract $currentGateway = null;
-
-    /**
      * Private constructor to prevent direct instantiation.
      *
      * @param GatewayRegistryContract $registry Gateway registry
      * @param HookRegistryContract $hookRegistry Hook registry
      */
-    private function __construct(GatewayRegistryContract $registry, HookRegistryContract $hookRegistry)
+    private function __construct(GatewayRegistryContract $registry)
     {
         $this->registry = $registry;
-        $this->hookRegistry = $hookRegistry;
     }
 
     /**
@@ -63,10 +45,10 @@ class SmsManager implements SmsManagerContract
      * @param HookRegistryContract $hookRegistry Hook registry
      * @return self
      */
-    public static function init(GatewayRegistryContract $registry, HookRegistryContract $hookRegistry): self
+    public static function init(GatewayRegistryContract $registry): self
     {
         if (!self::$instance) {
-            self::$instance = new self($registry, $hookRegistry);
+            self::$instance = new self($registry);
         }
         return self::$instance;
     }
@@ -80,7 +62,7 @@ class SmsManager implements SmsManagerContract
     public static function instance(): self
     {
         if (!self::$instance) {
-            throw new \RuntimeException("PaymentManager not initialized. Call PaymentManager::init() first.");
+            throw new \RuntimeException("SmsManager not initialized. Call SmsManager::init() first.");
         }
         return self::$instance;
     }
@@ -117,50 +99,9 @@ class SmsManager implements SmsManagerContract
      * @param string $gateway Gateway name
      * @return static
      */
-    public function gateway(string $gateway): static
-    {
-        $this->currentGateway = $this->registry->get($gateway);
-        return $this;
-    }
-
-    /**
-     * Get the gateway instance from the registry.
-     *
-     * @param string $gateway The identifier of the gateway to retrieve.
-     *
-     * @return GatewayContract The resolved gateway instance.
-     */
-    public function getGateway(string $gateway) : GatewayContract
+    public function gateway(string $gateway): GatewayContract
     {
         return $this->registry->get($gateway);
-    }
-
-    /**
-     * Process a payment through the currently selected gateway.
-     *
-     * @param SmsDTO $dto Sms data transfer object
-     * @return SmsResult
-     * @throws \RuntimeException if no gateway is selected or DTO is invalid
-     */
-    public function send(BaseDTO $dto): SmsResult
-    {
-        $this->ensureGatewayIsSelected();
-
-        if (!$dto instanceof BaseDTO) {
-            throw new \RuntimeException("Provided DTO must return an instance of BaseDTO");
-        }
-
-        // Execute beforeSmsSent hook
-        $dto = $this->hookRegistry->execute(
-            Hook::BEFORE_SMS_SENT,
-            $dto,
-            $this->currentGateway->name()
-        );
-
-        // Process sms via gateway
-        $result = $this->currentGateway->send($dto);
-
-        return $result;
     }
 
 
@@ -202,49 +143,4 @@ class SmsManager implements SmsManagerContract
         return $filtered;
     }
 
-    /**
-     * Register a hook to execute before payment processing.
-     *
-     * @param string|callable|BeforeSmsSentContract $hook Hook callback, class name, or instance
-     * @return void
-     */
-    public function onBeforeSmsSent(string|callable|BeforeSmsSentContract $hook): void
-    {
-        if(is_callable($hook)){
-            $this->hookRegistry->configureHook(
-                Hook::BEFORE_SMS_SENT,
-                allowMultiple: false,
-                defaultPriority: 0,
-                returnMode: HookReturnMode::SINGLE,
-            );
-
-        }else {
-            $this->hookRegistry->configureHook(
-                Hook::BEFORE_SMS_SENT,
-                allowMultiple: false,
-                defaultPriority: 0,
-                returnMode: HookReturnMode::SINGLE,
-                strictContracts: [BeforeSmsSentContract::class]
-            );
-        }
-
-        $this->hookRegistry->register(
-            Hook::BEFORE_SMS_SENT,
-            $hook,
-        );
-    }
-
-    
-    /**
-     * Ensure a sms gateway has been selected.
-     *
-     * @return void
-     * @throws \RuntimeException if no gateway is selected
-     */
-    private function ensureGatewayIsSelected(): void
-    {
-        if (!$this->currentGateway) {
-            throw new \RuntimeException("No gateway selected. Please call gateway() before proceeding.");
-        }
-    }
 }

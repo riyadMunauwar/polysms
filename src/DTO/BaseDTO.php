@@ -1,6 +1,6 @@
 <?php
 
-namespace Riyad\Polysms\DTO;
+namespace Riyad\PolySms\DTO;
 
 use JsonSerializable;
 use InvalidArgumentException;

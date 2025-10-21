@@ -2,49 +2,45 @@
 
 require_once 'vendor/autoload.php';
 
-use Riyad\Polysms\DTO\Config;
-use Riyad\Polysms\DTO\GennetGatewayConfig;
-use Riyad\Polysms\DTO\BaseDTO;
-use Riyad\Polysms\DTO\GennetSmsDTO;
-use Riyad\Polysms\SmsManager;
-use Riyad\Polysms\GatewayRegistry;
-use Riyad\Polysms\Gateways\Gennet;
-use Riyad\Polysms\Contracts\BeforeSmsSentContract;
-use Riyad\Polysms\Contracts\HookContract;
-use Riyad\Polysms\HookRegistry;
+use Riyad\PolySms\DTO\Config;
+use Riyad\PolySms\Gateways\Gennet\DTO\GennetGatewayConfig;
+use Riyad\PolySms\DTO\BaseDTO;
+use Riyad\PolySms\Gateways\Gennet\DTO\GennetSmsDTO;
+use Riyad\PolySms\SmsManager;
+use Riyad\PolySms\GatewayRegistry;
+use Riyad\PolySms\Gateways\Gennet\Gennet;
+use Riyad\PolySms\HookRegistry;
+use Riyad\Hooks\Hook;
+use Riyad\PolySms\Constants\Hook as HookConstants;
 
+$hook = Hook::instance();
 
 $registry = GatewayRegistry::init();
-$hookRegistry = HookRegistry::init();
 
 
-$manager = SmsManager::init($registry, $hookRegistry);
 
-$manager->register('giosms', function(){
+$manager = SmsManager::init($registry);
+
+$manager->register('gennet', function(){
     return new Gennet();
-}, ['config' => new GennetGatewayConfig(['apiKey' => 'XC4s0LA/gCBoPRIy'])]);
+}, ['config' => new GennetGatewayConfig(['apiKey' => '$2y$12$KdGu8CecaYTbmEmumKdPBe1v6Px7cOF3FoD.fXC4s0LA/gCBoPRIx'])]);
 
 
-class CreateTransction implements BeforeSmsSentContract
-{
-    public function handle(BaseDTO $dto, string $gatewayName) : BaseDTO
-    {
-        var_dump('Continue...');
-        return $dto;
-    }
-}
+$hook->addFilter(HookConstants::BEFORE_SMS_SENT, function($dto){
+    var_dump('Before sent');
 
-$manager->onBeforeSmsSent(CreateTransction::class);
-
+    return $dto;
+});
+$hook->addAction(HookConstants::AFTER_SMS_SENT, fn() => var_dump('Hello World'));
 
 
 $sms = new GennetSmsDTO([
     'senderId' => '8809612342019',
     'to' => '01794263387',
-    'message' => 'Running test...',
+    'message' => 'Test SMS...',
 ]);
 
-$res = $manager->gateway('giosms')->send($sms);
+$res = $manager->gateway('gennet')->send($sms);
 
 
 var_dump($res);

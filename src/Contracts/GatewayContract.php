@@ -1,10 +1,10 @@
 <?php
 
-namespace Riyad\Polysms\Contracts;
+namespace Riyad\PolySms\Contracts;
 
-use Riyad\Polysms\DTO\BaseDTO;
-use Riyad\Polysms\DTO\SmsResult;
-use Riyad\Polysms\DTO\Config;
+use Riyad\PolySms\DTO\BaseDTO;
+use Riyad\PolySms\DTO\SmsResult;
+use Riyad\PolySms\DTO\Config;
 
 interface GatewayContract
 {

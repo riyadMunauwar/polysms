@@ -1,6 +1,8 @@
 <?php
 
-namespace Riyad\Polysms\DTO;
+namespace Riyad\PolySms\Gateways\Gennet\DTO;
+
+use Riyad\PolySms\DTO\BaseDTO;
 
 class GennetSmsDTO extends BaseDTO
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Riyad\Polysms;
+namespace Riyad\PolySms;
 
-use Riyad\Polysms\Contracts\GatewayRegistryContract;
-use Riyad\Polysms\Contracts\GatewayContract;
-use Riyad\Polysms\Exceptions\GatewayNotFoundException;
+use Riyad\PolySms\Contracts\GatewayRegistryContract;
+use Riyad\PolySms\Contracts\GatewayContract;
+use Riyad\PolySms\Exceptions\GatewayNotFoundException;
 
 /**
  * Class GatewayRegistry

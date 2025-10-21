@@ -1,11 +1,11 @@
 {
-    "name": "riyad/polysms",
+    "name": "devriyad/polysms",
     "description": "Unified sms gateway interface for Laravel/PHP with pluggable drivers for providers and more.",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Riyad\\Polysms\\": "src/"
+            "Riyad\\PolySms\\": "src/"
         }
     },
     "authors": [
@@ -15,5 +15,7 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "devriyad/hooks": "^0.1.1"
+    }
 }

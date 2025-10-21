@@ -1,8 +1,8 @@
 <?php
 
-namespace Riyad\Polysms\Contracts;
+namespace Riyad\PolySms\Contracts;
 
-use Riyad\Polysms\Contracts\GatewayContract;
+use Riyad\PolySms\Contracts\GatewayContract;
 
 /**
  * Interface GatewayRegistryContract

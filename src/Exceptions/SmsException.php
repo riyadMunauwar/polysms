@@ -1,5 +1,5 @@
 <?php
 
-namespace Riyad\Polysms\Exceptions;
+namespace Riyad\PolySms\Exceptions;
 
 class SmsException extends \Exception {}

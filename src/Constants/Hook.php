@@ -1,6 +1,6 @@
 <?php 
 
-namespace Riyad\Polysms\Constants;
+namespace Riyad\PolySms\Constants;
 
 /**
  * Class Hook
@@ -21,5 +21,6 @@ final class Hook
     /** 
      * Hook name executed before a sms end.
      */
-    public const BEFORE_SMS_SENT = 'beforeSmsSent';
+    public const BEFORE_SMS_SENT = 'polysms.beforeSmsSent';
+    public const AFTER_SMS_SENT = 'polysms.afterSmsSent';
 }

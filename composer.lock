@@ -1,0 +1,59 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "7e0a23e45b10794609eb2bb76022c9ed",
+    "packages": [
+        {
+            "name": "devriyad/hooks",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/riyadMunauwar/hooks.git",
+                "reference": "c52f86b36263f5afa4254d9a31e0d1096377f67d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/riyadMunauwar/hooks/zipball/c52f86b36263f5afa4254d9a31e0d1096377f67d",
+                "reference": "c52f86b36263f5afa4254d9a31e0d1096377f67d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Riyad\\Hooks\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Riyad Munauwar",
+                    "email": "riyadmunauwar@gmail.com"
+                }
+            ],
+            "description": "Lightweight, synchronous, WordPress-style hook system for PHP, production-grade, type-safe and extensible.",
+            "support": {
+                "issues": "https://github.com/riyadMunauwar/hooks/issues",
+                "source": "https://github.com/riyadMunauwar/hooks/tree/v0.1.2"
+            },
+            "time": "2025-10-21T12:12:40+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
+}
