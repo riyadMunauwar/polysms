@@ -6,6 +6,7 @@ use Riyad\PolySms\Contracts\GatewayContract;
 use Riyad\PolySms\DTO\BaseDTO;
 use Riyad\PolySms\DTO\Config;
 use Riyad\PolySms\DTO\SmsResult;
+use Riyad\PolySms\Exceptions\UnsupportedFeatureException;
 
 abstract class AbstractGateway implements GatewayContract
 {
