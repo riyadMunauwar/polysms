@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e0a23e45b10794609eb2bb76022c9ed",
+    "content-hash": "9c20b9dced6120aec8d8e04b1ef5add3",
     "packages": [
         {
             "name": "devriyad/hooks",
-            "version": "v0.1.2",
+            "version": "v0.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/riyadMunauwar/hooks.git",
-                "reference": "c52f86b36263f5afa4254d9a31e0d1096377f67d"
+                "reference": "05ec871ae6dc0ca8b7938dd47b04326a65805c99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/riyadMunauwar/hooks/zipball/c52f86b36263f5afa4254d9a31e0d1096377f67d",
-                "reference": "c52f86b36263f5afa4254d9a31e0d1096377f67d",
+                "url": "https://api.github.com/repos/riyadMunauwar/hooks/zipball/05ec871ae6dc0ca8b7938dd47b04326a65805c99",
+                "reference": "05ec871ae6dc0ca8b7938dd47b04326a65805c99",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,6 @@
                     "Riyad\\Hooks\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -41,10 +40,10 @@
             ],
             "description": "Lightweight, synchronous, WordPress-style hook system for PHP, production-grade, type-safe and extensible.",
             "support": {
-                "issues": "https://github.com/riyadMunauwar/hooks/issues",
-                "source": "https://github.com/riyadMunauwar/hooks/tree/v0.1.2"
+                "source": "https://github.com/riyadMunauwar/hooks/tree/v0.1.4",
+                "issues": "https://github.com/riyadMunauwar/hooks/issues"
             },
-            "time": "2025-10-21T12:12:40+00:00"
+            "time": "2025-10-22T05:26:58+00:00"
         }
     ],
     "packages-dev": [],

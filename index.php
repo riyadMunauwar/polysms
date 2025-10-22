@@ -10,10 +10,10 @@ use Riyad\PolySms\SmsManager;
 use Riyad\PolySms\GatewayRegistry;
 use Riyad\PolySms\Gateways\Gennet\Gennet;
 use Riyad\PolySms\HookRegistry;
-use Riyad\Hooks\Hook;
-use Riyad\PolySms\Constants\Hook as HookConstants;
+use Riyad\PolySms\SmsHook;
+use Riyad\PolySms\Constants\Hook;
 
-$hook = Hook::instance();
+$hook = SmsHook::instance();
 
 $registry = GatewayRegistry::init();
 
@@ -26,12 +26,12 @@ $manager->register('gennet', function(){
 }, ['config' => new GennetGatewayConfig(['apiKey' => '$2y$12$KdGu8CecaYTbmEmumKdPBe1v6Px7cOF3FoD.fXC4s0LA/gCBoPRIx'])]);
 
 
-$hook->addFilter(HookConstants::BEFORE_SMS_SENT, function($dto){
+$hook->addFilter(Hook::BEFORE_SMS_SENT, function($dto){
     var_dump('Before sent');
 
     return $dto;
 });
-$hook->addAction(HookConstants::AFTER_SMS_SENT, fn() => var_dump('Hello World'));
+$hook->addAction(Hook::AFTER_SMS_SENT, fn() => var_dump('Hello World'));
 
 
 $sms = new GennetSmsDTO([

@@ -3,6 +3,12 @@
     "description": "Unified sms gateway interface for Laravel/PHP with pluggable drivers for providers and more.",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/riyadMunauwar/hooks.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Riyad\\PolySms\\": "src/"
@@ -16,6 +22,6 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "devriyad/hooks": "^0.1.1"
+        "devriyad/hooks": "^0.1.4"
     }
 }

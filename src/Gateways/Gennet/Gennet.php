@@ -9,8 +9,9 @@ use Riyad\PolySms\DTO\SmsResult;
 use Riyad\PolySms\GatewayRegistry;
 use Riyad\PolySms\Client\Http;
 use Riyad\PolySms\Client\HttpException;
-use Riyad\Hooks\Hook;
-use Riyad\PolySms\Constants\Hook as HookConstants;
+use Riyad\PolySms\SmsHook;
+use Riyad\PolySms\Constants\Hook;
+
 
 class Gennet extends AbstractGateway
 {
@@ -18,7 +19,7 @@ class Gennet extends AbstractGateway
 
     private ?Http $client;
 
-    private $hook;
+    private SmsHook $hook;
 
 
     public function __construct()
@@ -28,7 +29,7 @@ class Gennet extends AbstractGateway
 
         $this->apiKey = $metaData->apiKey;
         $this->client = new Http('https://gbarta.gennet.com.bd/api/v1', verifySsl: false);
-        $this->hook = Hook::instance();
+        $this->hook = SmsHook::instance();
     }
 
 
@@ -50,7 +51,7 @@ class Gennet extends AbstractGateway
 
     public function send(BaseDTO $dto): SmsResult 
     {
-        $dto = $this->hook->applyFilters(HookConstants::BEFORE_SMS_SENT, $dto);
+        $dto = $this->hook->applyFilters(Hook::BEFORE_SMS_SENT, $dto);
 
         $data = [
             'api_key'     => $this->apiKey,
@@ -73,7 +74,7 @@ class Gennet extends AbstractGateway
                 ]);
             }
 
-            $this->hook->doAction(HookConstants::AFTER_SMS_SENT);
+            $this->hook->doAction(Hook::AFTER_SMS_SENT);
 
             return new SmsResult([
                 'success' => true,
