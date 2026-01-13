@@ -8,4 +8,5 @@ class SmsResult extends BaseDTO
     public string $message;
     public ?array $errors;
     public ?string $gateway;
+    public ?array $response;
 }

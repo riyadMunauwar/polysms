@@ -72,7 +72,7 @@ $smsIPTSP = new InfozillionSmsDTO([
 $result = $manager->gateway('infozillion')->send($smsIPTSP);
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->gatewayResponse, JSON_PRETTY_PRINT) . "\n";
+echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
 echo "\n";
 
 // ============================================
@@ -102,7 +102,7 @@ $smsMNO = new InfozillionSmsDTO([
 $result = $manager->gateway('infozillion')->send($smsMNO);
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->gatewayResponse, JSON_PRETTY_PRINT) . "\n";
+echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
 echo "\n";
 
 // ============================================
@@ -132,7 +132,7 @@ $smsBangla = new InfozillionSmsDTO([
 $result = $manager->gateway('infozillion')->send($smsBangla);
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->gatewayResponse, JSON_PRETTY_PRINT) . "\n";
+echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
 echo "\n";
 
 // ============================================
@@ -189,7 +189,7 @@ $infozillion = $manager->gateway('infozillion');
 $result = $infozillion->checkDelivery($checkDelivery);
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->gatewayResponse, JSON_PRETTY_PRINT) . "\n";
+echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
 echo "\n";
 
 // ============================================
@@ -210,7 +210,7 @@ $checkAnsBalance = new InfozillionCheckAnsBalanceDTO([
 $result = $infozillion->checkAnsBalance($checkAnsBalance);
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->gatewayResponse, JSON_PRETTY_PRINT) . "\n";
+echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
 echo "\n";
 
 // ============================================
@@ -226,7 +226,7 @@ $checkCpBalance = new InfozillionCheckCpBalanceDTO([
 $result = $infozillion->checkCpBalance($checkCpBalance);
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->gatewayResponse, JSON_PRETTY_PRINT) . "\n";
+echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
 echo "\n";
 
 // ============================================
@@ -246,7 +246,7 @@ $checkCli = new InfozillionCheckCliDTO([
 $result = $infozillion->checkCli($checkCli);
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->gatewayResponse, JSON_PRETTY_PRINT) . "\n";
+echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
 echo "\n";
 
 // ============================================

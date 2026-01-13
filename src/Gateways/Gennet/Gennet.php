@@ -28,7 +28,7 @@ class Gennet extends AbstractGateway
         $metaData = $registry->getMeta($this->name())['config'];
 
         $this->apiKey = $metaData->apiKey;
-        $this->client = new Http('https://gbarta.gennet.com.bd/api/v1', verifySsl: false);
+        $this->client = new Http('https://gbarta.gennet.com.bd/api/v1')->throwOnError(false);
         $this->hook = SmsHook::instance();
     }
 
@@ -69,7 +69,7 @@ class Gennet extends AbstractGateway
                 return new SmsResult([
                     'success' => false,
                     'message' => 'Error',
-                    'gatewayResponse' => $response,
+                    'response' => $response,
                     'gateway' => $this->name(),
                 ]);
             }
@@ -79,7 +79,7 @@ class Gennet extends AbstractGateway
             return new SmsResult([
                 'success' => true,
                 'message' => 'Sms successfully submited to gennet server.',
-                'gatewayResponse' => $response,
+                'response' => $response,
                 'gateway' => $this->name(),
             ]);
 

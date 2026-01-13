@@ -118,7 +118,7 @@ class Infozillion extends AbstractGateway
             'displayName' => 'Infozillion',
             'description' => 'Infozillion Bangladesh',
             'logoUrl' => '#',
-        ]);
+        ]); 
     }
 
     /**
@@ -199,7 +199,7 @@ class Infozillion extends AbstractGateway
                 return new SmsResult([
                     'success' => false,
                     'message' => $this->parseResponseMessage($response),
-                    'gatewayResponse' => $response,
+                    'response' => $response,
                     'gateway' => $this->name(),
                 ]);
             }
@@ -209,7 +209,7 @@ class Infozillion extends AbstractGateway
             return new SmsResult([
                 'success' => true,
                 'message' => $this->parseResponseMessage($response),
-                'gatewayResponse' => $response,
+                'response' => $response,
                 'gateway' => $this->name(),
             ]);
  
@@ -258,7 +258,7 @@ class Infozillion extends AbstractGateway
                 return new SmsResult([
                     'success' => false,
                     'message' => $this->parseResponseMessage($response),
-                    'gatewayResponse' => $response,
+                    'response' => $response,
                     'gateway' => $this->name(),
                 ]);
             }
@@ -266,7 +266,7 @@ class Infozillion extends AbstractGateway
             return new SmsResult([
                 'success' => true,
                 'message' => $this->parseResponseMessage($response),
-                'gatewayResponse' => $response,
+                'response' => $response,
                 'gateway' => $this->name(),
             ]);
 
@@ -309,7 +309,7 @@ class Infozillion extends AbstractGateway
                 return new SmsResult([
                     'success' => false,
                     'message' => $this->parseResponseMessage($response),
-                    'gatewayResponse' => $response,
+                    'response' => $response,
                     'gateway' => $this->name(),
                 ]);
             }
@@ -317,7 +317,7 @@ class Infozillion extends AbstractGateway
             return new SmsResult([
                 'success' => true,
                 'message' => $this->parseResponseMessage($response),
-                'gatewayResponse' => $response,
+                'response' => $response,
                 'gateway' => $this->name(),
             ]);
 
@@ -357,7 +357,7 @@ class Infozillion extends AbstractGateway
                 return new SmsResult([
                     'success' => false,
                     'message' => $this->parseResponseMessage($response),
-                    'gatewayResponse' => $response,
+                    'response' => $response,
                     'gateway' => $this->name(),
                 ]);
             }
@@ -365,7 +365,7 @@ class Infozillion extends AbstractGateway
             return new SmsResult([
                 'success' => true,
                 'message' => $this->parseResponseMessage($response),
-                'gatewayResponse' => $response,
+                'response' => $response,
                 'gateway' => $this->name(),
             ]);
 
@@ -409,7 +409,7 @@ class Infozillion extends AbstractGateway
                 return new SmsResult([
                     'success' => false,
                     'message' => $this->parseResponseMessage($response),
-                    'gatewayResponse' => $response,
+                    'response' => $response,
                     'gateway' => $this->name(),
                 ]);
             }
@@ -417,7 +417,7 @@ class Infozillion extends AbstractGateway
             return new SmsResult([
                 'success' => true,
                 'message' => $this->parseResponseMessage($response),
-                'gatewayResponse' => $response,
+                'response' => $response,
                 'gateway' => $this->name(),
             ]);
 
