@@ -177,18 +177,24 @@ class Infozillion extends AbstractGateway
             'username' => $dto->username,
             'password' => $dto->password,
             'billMsisdn' => $dto->billMsisdn,
-            'usernameSecondary' => $dto?->usernameSecondary,
-            'passwordSecondary' => $dto?->passwordSecondary,
-            'billMsisdnSecondary' => $dto?->billMsisdnSecondary,
             'apiKey' => $dto->apiKey,
             'cli' => $dto->cli,
             'msisdnList' => $dto->msisdnList,
             'transactionType' => $dto->transactionType,
             'messageType' => $dto->messageType,
             'isLongSMS' => $dto?->isLongSMS,
-            'campaignId' => $dto?->campaignId,
             'message' => $dto->message,
         ];
+
+        if($dto?->usernameSecondary && $dto?->passwordSecondary && $dto?->billMsisdnSecondary){
+            $data['usernameSecondary'] = $dto?->usernameSecondary;
+            $data['passwordSecondary'] = $dto?->passwordSecondary;
+            $data['billMsisdnSecondary'] = $dto?->billMsisdnSecondary;
+        }
+
+        if($dto?->campaignId){
+            $data['campaignId'] = $dto?->campaignId;
+        }
 
         $smsSendApiUrl = $dto->type === 'iptsp' ? $this->sendSmsIPTSPUrl : $this->sendSmsMNOUrl;
 
@@ -241,13 +247,16 @@ class Infozillion extends AbstractGateway
             'username' => $dto->username,
             'password' => $dto->password,
             'billMsisdn' => $dto->billMsisdn,
-            'usernameSecondary' => $dto?->usernameSecondary,
-            'passwordSecondary' => $dto?->passwordSecondary,
-            'billMsisdnSecondary' => $dto?->billMsisdnSecondary,
             'apiKey' => $dto->apiKey,
             'msisdnList' => $dto->msisdnList,
             'serverReference' => $dto->serverReference,
         ];
+
+        if($dto?->usernameSecondary && $dto?->passwordSecondary && $dto?->billMsisdnSecondary){
+            $data['usernameSecondary'] = $dto?->usernameSecondary;
+            $data['passwordSecondary'] = $dto?->passwordSecondary;
+            $data['billMsisdnSecondary'] = $dto?->billMsisdnSecondary;
+        }
 
         try {
             $response = $this->client
