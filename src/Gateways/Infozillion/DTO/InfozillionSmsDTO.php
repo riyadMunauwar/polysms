@@ -15,7 +15,7 @@ class InfozillionSmsDTO extends BaseDTO
     public ?string $billMsisdnSecondary;
     public string $apiKey;
     public string $cli;
-    public string $msisdnList;
+    public array $msisdnList;
     public string $transactionType;
     public string $messageType;
     public ?bool $isLongSMS;

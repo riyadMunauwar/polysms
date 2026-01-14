@@ -13,6 +13,6 @@ class InfozillionCheckDeliveryDTO extends BaseDTO
     public ?string $passwordSecondary;
     public ?string $billMsisdnSecondary;
     public string $apiKey;
-    public string $msisdnList;
+    public array $msisdnList;
     public string $serverReference;
 }
