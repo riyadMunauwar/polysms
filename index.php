@@ -56,16 +56,16 @@ $smsIPTSP = new InfozillionSmsDTO([
     'username' => $config['username'],
     'password' => $config['password'],
     'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
+    // 'usernameSecondary' => null,
+    // 'passwordSecondary' => null,
+    // 'billMsisdnSecondary' => null,
     'apiKey' => $config['apiKey'],
     'cli' => $config['cli'],
-    'msisdnList' => '8801794263387',
+    'msisdnList' => ['8801794263387'],
     'transactionType' => 'T',
     'messageType' => '1',
     'isLongSMS' => null,
-    'campaignId' => null,
+    // 'campaignId' => null,
     'message' => 'Hello from GioSMS - IPTSP Test',
 ]);
 
@@ -73,384 +73,384 @@ $result = $manager->gateway('infozillion')->send($smsIPTSP);
 
 print_r($result);
 
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
-echo "\n";
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 2: Send SMS (MNO Type)
-// ============================================
-echo "TEST 2: Send SMS (MNO Type)\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 2: Send SMS (MNO Type)
+// // ============================================
+// echo "TEST 2: Send SMS (MNO Type)\n";
+// echo str_repeat("-", 50) . "\n";
 
-$smsMNO = new InfozillionSmsDTO([
-    'type' => 'mno',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'T',
-    'messageType' => '1',
-    'isLongSMS' => null,
-    'campaignId' => null,
-    'message' => 'Hello from GioSMS - MNO Test',
-]);
+// $smsMNO = new InfozillionSmsDTO([
+//     'type' => 'mno',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'T',
+//     'messageType' => '1',
+//     'isLongSMS' => null,
+//     'campaignId' => null,
+//     'message' => 'Hello from GioSMS - MNO Test',
+// ]);
 
-$result = $manager->gateway('infozillion')->send($smsMNO);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
-echo "\n";
+// $result = $manager->gateway('infozillion')->send($smsMNO);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 3: Send Unicode Bangla SMS
-// ============================================
-echo "TEST 3: Send Unicode Bangla SMS\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 3: Send Unicode Bangla SMS
+// // ============================================
+// echo "TEST 3: Send Unicode Bangla SMS\n";
+// echo str_repeat("-", 50) . "\n";
 
-$smsBangla = new InfozillionSmsDTO([
-    'type' => 'iptsp',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'T',
-    'isLongSMS' => false,
-    'campaignId' => null,
-    'messageType' => '3', // Unicode Bangla
-    'message' => 'হ্যালো, আপনি কেমন আছেন?',
-]);
+// $smsBangla = new InfozillionSmsDTO([
+//     'type' => 'iptsp',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'T',
+//     'isLongSMS' => false,
+//     'campaignId' => null,
+//     'messageType' => '3', // Unicode Bangla
+//     'message' => 'হ্যালো, আপনি কেমন আছেন?',
+// ]);
 
-$result = $manager->gateway('infozillion')->send($smsBangla);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
-echo "\n";
+// $result = $manager->gateway('infozillion')->send($smsBangla);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 4: Send Long SMS
-// ============================================
-echo "TEST 4: Send Long SMS\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 4: Send Long SMS
+// // ============================================
+// echo "TEST 4: Send Long SMS\n";
+// echo str_repeat("-", 50) . "\n";
 
-$longMessage = str_repeat("This is a long message test. ", 10); // Create a long message
+// $longMessage = str_repeat("This is a long message test. ", 10); // Create a long message
 
-$smsLong = new InfozillionSmsDTO([
-    'type' => 'iptsp',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'T',
-    'messageType' => '1',
-    'isLongSMS' => true,
-    'campaignId' => null,
-    'message' => $longMessage,
-]);
+// $smsLong = new InfozillionSmsDTO([
+//     'type' => 'iptsp',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'T',
+//     'messageType' => '1',
+//     'isLongSMS' => true,
+//     'campaignId' => null,
+//     'message' => $longMessage,
+// ]);
 
-$result = $manager->gateway('infozillion')->send($smsLong);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Message Length: " . strlen($longMessage) . " characters\n";
-echo "\n";
+// $result = $manager->gateway('infozillion')->send($smsLong);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Message Length: " . strlen($longMessage) . " characters\n";
+// echo "\n";
 
-// ============================================
-// TEST 5: Check Delivery Report
-// ============================================
-echo "TEST 5: Check Delivery Report\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 5: Check Delivery Report
+// // ============================================
+// echo "TEST 5: Check Delivery Report\n";
+// echo str_repeat("-", 50) . "\n";
 
-$checkDelivery = new InfozillionCheckDeliveryDTO([
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'msisdnList' => '01794263387',
-    'serverReference' => '9c1981f4-a31b-4937-a800-7212075f7ad3', // Replace with actual server reference from previous send
-]);
+// $checkDelivery = new InfozillionCheckDeliveryDTO([
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'msisdnList' => '01794263387',
+//     'serverReference' => '9c1981f4-a31b-4937-a800-7212075f7ad3', // Replace with actual server reference from previous send
+// ]);
 
-$infozillion = $manager->gateway('infozillion');
-$result = $infozillion->checkDelivery($checkDelivery);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
-echo "\n";
+// $infozillion = $manager->gateway('infozillion');
+// $result = $infozillion->checkDelivery($checkDelivery);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 6: Check ANS Balance (MNO)
-// ============================================
-echo "TEST 6: Check ANS Balance (Grameenphone)\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 6: Check ANS Balance (MNO)
+// // ============================================
+// echo "TEST 6: Check ANS Balance (Grameenphone)\n";
+// echo str_repeat("-", 50) . "\n";
 
-$checkAnsBalance = new InfozillionCheckAnsBalanceDTO([
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'mno' => 'gp', // Options: gp, robi, banglalink, teletalk
-]);
+// $checkAnsBalance = new InfozillionCheckAnsBalanceDTO([
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'mno' => 'gp', // Options: gp, robi, banglalink, teletalk
+// ]);
 
-$result = $infozillion->checkAnsBalance($checkAnsBalance);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
-echo "\n";
+// $result = $infozillion->checkAnsBalance($checkAnsBalance);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 7: Check CP Balance
-// ============================================
-echo "TEST 7: Check CP Balance\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 7: Check CP Balance
+// // ============================================
+// echo "TEST 7: Check CP Balance\n";
+// echo str_repeat("-", 50) . "\n";
 
-$checkCpBalance = new InfozillionCheckCpBalanceDTO([
-    'apiKey' => $config['apiKey'],
-]);
+// $checkCpBalance = new InfozillionCheckCpBalanceDTO([
+//     'apiKey' => $config['apiKey'],
+// ]);
 
-$result = $infozillion->checkCpBalance($checkCpBalance);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
-echo "\n";
+// $result = $infozillion->checkCpBalance($checkCpBalance);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 8: Check CLI Availability
-// ============================================
-echo "TEST 8: Check CLI Availability\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 8: Check CLI Availability
+// // ============================================
+// echo "TEST 8: Check CLI Availability\n";
+// echo str_repeat("-", 50) . "\n";
 
-$checkCli = new InfozillionCheckCliDTO([
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'apiKey' => $config['apiKey'],
-    'mno' => 'gp',
-    'cli' => $config['cli'],
-]);
+// $checkCli = new InfozillionCheckCliDTO([
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'apiKey' => $config['apiKey'],
+//     'mno' => 'gp',
+//     'cli' => $config['cli'],
+// ]);
 
-$result = $infozillion->checkCli($checkCli);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
-echo "\n";
+// $result = $infozillion->checkCli($checkCli);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 9: Test Helper Methods
-// ============================================
-echo "TEST 9: Test Helper Methods\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 9: Test Helper Methods
+// // ============================================
+// echo "TEST 9: Test Helper Methods\n";
+// echo str_repeat("-", 50) . "\n";
 
-// Send an SMS first to get a result
-$testSms = new InfozillionSmsDTO([
-    'type' => 'iptsp',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'T',
-    'messageType' => '1',
-    'isLongSMS' => true,
-    'campaignId' => null,
-    'message' => 'Helper method test',
-]);
+// // Send an SMS first to get a result
+// $testSms = new InfozillionSmsDTO([
+//     'type' => 'iptsp',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'T',
+//     'messageType' => '1',
+//     'isLongSMS' => true,
+//     'campaignId' => null,
+//     'message' => 'Helper method test',
+// ]);
 
-$result = $infozillion->send($testSms);
+// $result = $infozillion->send($testSms);
 
-echo "Is Successful: " . ($infozillion->isSuccessful($result) ? 'Yes' : 'No') . "\n";
-echo "Error Message: " . $infozillion->getErrorMessage($result) . "\n";
-echo "Response Code: " . ($infozillion->getResponseCode($result) ?? 'N/A') . "\n";
-echo "Is Insufficient Balance: " . ($infozillion->isInsufficientBalance($result) ? 'Yes' : 'No') . "\n";
-echo "Is Invalid Credentials: " . ($infozillion->isInvalidCredentials($result) ? 'Yes' : 'No') . "\n";
-echo "Is Invalid CLI: " . ($infozillion->isInvalidCli($result) ? 'Yes' : 'No') . "\n";
-echo "Is Account Barred: " . ($infozillion->isAccountBarred($result) ? 'Yes' : 'No') . "\n";
-echo "Is IP Blacklisted: " . ($infozillion->isIpBlacklisted($result) ? 'Yes' : 'No') . "\n";
-echo "Is Invalid Content: " . ($infozillion->isInvalidContent($result) ? 'Yes' : 'No') . "\n";
-echo "Is Limit Exceeded: " . ($infozillion->isLimitExceeded($result) ? 'Yes' : 'No') . "\n";
-echo "\n";
+// echo "Is Successful: " . ($infozillion->isSuccessful($result) ? 'Yes' : 'No') . "\n";
+// echo "Error Message: " . $infozillion->getErrorMessage($result) . "\n";
+// echo "Response Code: " . ($infozillion->getResponseCode($result) ?? 'N/A') . "\n";
+// echo "Is Insufficient Balance: " . ($infozillion->isInsufficientBalance($result) ? 'Yes' : 'No') . "\n";
+// echo "Is Invalid Credentials: " . ($infozillion->isInvalidCredentials($result) ? 'Yes' : 'No') . "\n";
+// echo "Is Invalid CLI: " . ($infozillion->isInvalidCli($result) ? 'Yes' : 'No') . "\n";
+// echo "Is Account Barred: " . ($infozillion->isAccountBarred($result) ? 'Yes' : 'No') . "\n";
+// echo "Is IP Blacklisted: " . ($infozillion->isIpBlacklisted($result) ? 'Yes' : 'No') . "\n";
+// echo "Is Invalid Content: " . ($infozillion->isInvalidContent($result) ? 'Yes' : 'No') . "\n";
+// echo "Is Limit Exceeded: " . ($infozillion->isLimitExceeded($result) ? 'Yes' : 'No') . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 10: Test Hooks
-// ============================================
-echo "TEST 10: Test Hooks (Before/After SMS Sent)\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 10: Test Hooks
+// // ============================================
+// echo "TEST 10: Test Hooks (Before/After SMS Sent)\n";
+// echo str_repeat("-", 50) . "\n";
 
-// Add hooks
-$hook->addFilter(Hook::BEFORE_SMS_SENT, function($dto){
-    echo "HOOK: Before SMS sent - Modifying message\n";
-    $dto->message = $dto->message . " [Hook Modified]";
-    return $dto;
-});
+// // Add hooks
+// $hook->addFilter(Hook::BEFORE_SMS_SENT, function($dto){
+//     echo "HOOK: Before SMS sent - Modifying message\n";
+//     $dto->message = $dto->message . " [Hook Modified]";
+//     return $dto;
+// });
 
-$hook->addAction(Hook::AFTER_SMS_SENT, function() {
-    echo "HOOK: After SMS sent - Logging completed\n";
-});
+// $hook->addAction(Hook::AFTER_SMS_SENT, function() {
+//     echo "HOOK: After SMS sent - Logging completed\n";
+// });
 
-$hookTestSms = new InfozillionSmsDTO([
-    'type' => 'iptsp',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'T',
-    'messageType' => '1',
-    'isLongSMS' => true,
-    'campaignId' => null,
-    'message' => 'Hook test message',
-]);
+// $hookTestSms = new InfozillionSmsDTO([
+//     'type' => 'iptsp',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'T',
+//     'messageType' => '1',
+//     'isLongSMS' => true,
+//     'campaignId' => null,
+//     'message' => 'Hook test message',
+// ]);
 
-$result = $infozillion->send($hookTestSms);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message sent: " . $result->message . "\n";
-echo "\n";
+// $result = $infozillion->send($hookTestSms);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message sent: " . $result->message . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 11: Test Multiple Recipients
-// ============================================
-echo "TEST 11: Test Multiple Recipients (IPTSP - Max 1)\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 11: Test Multiple Recipients
+// // ============================================
+// echo "TEST 11: Test Multiple Recipients (IPTSP - Max 1)\n";
+// echo str_repeat("-", 50) . "\n";
 
-$multiRecipient = new InfozillionSmsDTO([
-    'type' => 'iptsp',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387', // IPTSP allows only 1
-    'transactionType' => 'T',
-    'messageType' => '1',
-    'isLongSMS' => true,
-    'campaignId' => null,
-    'message' => 'Multi recipient test',
-]);
+// $multiRecipient = new InfozillionSmsDTO([
+//     'type' => 'iptsp',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387', // IPTSP allows only 1
+//     'transactionType' => 'T',
+//     'messageType' => '1',
+//     'isLongSMS' => true,
+//     'campaignId' => null,
+//     'message' => 'Multi recipient test',
+// ]);
 
-$result = $infozillion->send($multiRecipient);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "\n";
+// $result = $infozillion->send($multiRecipient);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 12: Test Error Scenarios
-// ============================================
-echo "TEST 12: Test Error Scenarios (Invalid Credentials)\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 12: Test Error Scenarios
+// // ============================================
+// echo "TEST 12: Test Error Scenarios (Invalid Credentials)\n";
+// echo str_repeat("-", 50) . "\n";
 
-$invalidSms = new InfozillionSmsDTO([
-    'type' => 'iptsp',
-    'username' => 'invalid_username',
-    'password' => 'invalid_password',
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'T',
-    'messageType' => '1',
-    'isLongSMS' => true,
-    'campaignId' => null,
-    'message' => 'Error test',
-]);
+// $invalidSms = new InfozillionSmsDTO([
+//     'type' => 'iptsp',
+//     'username' => 'invalid_username',
+//     'password' => 'invalid_password',
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'T',
+//     'messageType' => '1',
+//     'isLongSMS' => true,
+//     'campaignId' => null,
+//     'message' => 'Error test',
+// ]);
 
-$result = $infozillion->send($invalidSms);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "Is Invalid Credentials: " . ($infozillion->isInvalidCredentials($result) ? 'Yes' : 'No') . "\n";
-echo "\n";
+// $result = $infozillion->send($invalidSms);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "Is Invalid Credentials: " . ($infozillion->isInvalidCredentials($result) ? 'Yes' : 'No') . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 13: Test Flash SMS
-// ============================================
-echo "TEST 13: Test Flash SMS (English)\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 13: Test Flash SMS
+// // ============================================
+// echo "TEST 13: Test Flash SMS (English)\n";
+// echo str_repeat("-", 50) . "\n";
 
-$flashSms = new InfozillionSmsDTO([
-    'type' => 'iptsp',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'T',
-    'messageType' => '2', // English Flash
-    'isLongSMS' => true,
-    'campaignId' => null,
-    'message' => 'This is a flash message!',
-]);
+// $flashSms = new InfozillionSmsDTO([
+//     'type' => 'iptsp',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'T',
+//     'messageType' => '2', // English Flash
+//     'isLongSMS' => true,
+//     'campaignId' => null,
+//     'message' => 'This is a flash message!',
+// ]);
 
-$result = $infozillion->send($flashSms);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "\n";
+// $result = $infozillion->send($flashSms);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "\n";
 
-// ============================================
-// TEST 14: Test with Campaign ID (Promotional)
-// ============================================
-echo "TEST 14: Test with Campaign ID (Promotional)\n";
-echo str_repeat("-", 50) . "\n";
+// // ============================================
+// // TEST 14: Test with Campaign ID (Promotional)
+// // ============================================
+// echo "TEST 14: Test with Campaign ID (Promotional)\n";
+// echo str_repeat("-", 50) . "\n";
 
-$campaignSms = new InfozillionSmsDTO([
-    'type' => 'mno',
-    'username' => $config['username'],
-    'password' => $config['password'],
-    'billMsisdn' => $config['billMsisdn'],
-    'usernameSecondary' => null,
-    'passwordSecondary' => null,
-    'billMsisdnSecondary' => null,
-    'apiKey' => $config['apiKey'],
-    'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
-    'transactionType' => 'P', // Promotional
-    'messageType' => '1',
-    'isLongSMS' => true,
-    'campaignId' => 'YOUR_CAMPAIGN_ID_HERE', // Replace with actual campaign ID
-    'message' => 'Promotional message with campaign',
-]);
+// $campaignSms = new InfozillionSmsDTO([
+//     'type' => 'mno',
+//     'username' => $config['username'],
+//     'password' => $config['password'],
+//     'billMsisdn' => $config['billMsisdn'],
+//     'usernameSecondary' => null,
+//     'passwordSecondary' => null,
+//     'billMsisdnSecondary' => null,
+//     'apiKey' => $config['apiKey'],
+//     'cli' => $config['cli'],
+//     'msisdnList' => '01794263387',
+//     'transactionType' => 'P', // Promotional
+//     'messageType' => '1',
+//     'isLongSMS' => true,
+//     'campaignId' => 'YOUR_CAMPAIGN_ID_HERE', // Replace with actual campaign ID
+//     'message' => 'Promotional message with campaign',
+// ]);
 
-$result = $infozillion->send($campaignSms);
-echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
-echo "Message: " . $result->message . "\n";
-echo "\n";
+// $result = $infozillion->send($campaignSms);
+// echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
+// echo "Message: " . $result->message . "\n";
+// echo "\n";
 
-// ============================================
-// Summary
-// ============================================
-echo "\n" . str_repeat("=", 50) . "\n";
-echo "ALL TESTS COMPLETED\n";
-echo str_repeat("=", 50) . "\n";
+// // ============================================
+// // Summary
+// // ============================================
+// echo "\n" . str_repeat("=", 50) . "\n";
+// echo "ALL TESTS COMPLETED\n";
+// echo str_repeat("=", 50) . "\n";

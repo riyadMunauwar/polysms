@@ -10,15 +10,15 @@ class InfozillionSmsDTO extends BaseDTO
     public string $username;
     public string $password;
     public string $billMsisdn;
-    public ?string $usernameSecondary;
-    public ?string $passwordSecondary;
-    public ?string $billMsisdnSecondary;
+    public ?string $usernameSecondary = null;
+    public ?string $passwordSecondary = null;
+    public ?string $billMsisdnSecondary = null;
     public string $apiKey;
     public string $cli;
     public array $msisdnList;
     public string $transactionType;
     public string $messageType;
-    public ?bool $isLongSMS;
-    public ?string $campaignId;
+    public ?bool $isLongSMS = false;
+    public ?string $campaignId = null;
     public string $message;
 }
