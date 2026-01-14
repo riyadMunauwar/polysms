@@ -94,16 +94,16 @@ class Infozillion extends AbstractGateway
 
     public function __construct()
     {
-        $this->sendSmsIPTSPUrl = 'https://a2papiintl.mnpspbd.com/a2p-sms-iptsp/api/v1/send-sms';
-        $this->sendSmsMNOUrl = 'https://a2papiintl.mnpspbd.com/a2p-sms/api/v1/send-sms';
-        $this->checkDeliveryMNOUrl = 'https://a2papiintl.mnpspbd.com/a2p-proxy-api/api/v1/check-delivery-report';
-        $this->checkDeliveryIPTSPUrl = 'https://a2papiintl.mnpspbd.com/a2p-proxy-api-iptsp/api/v1/check-delivery-report';
-        $this->checkAnsBalanceMNOUrl = 'https://a2papiintl.mnpspbd.com/a2p-proxy-api/api/v1/check-credit-balance';
-        $this->checkAnsBalanceIPTSPUrl = 'https://a2papiintl.mnpspbd.com/a2p-proxy-api-iptsp/api/v1/check-credit-balance';
-        $this->checkCliMNOUrl = 'https://a2papiintl.mnpspbd.com/a2p-proxy-api/api/v1/check-cli';
-        $this->checkCpBalanceUrl = 'https://a2papiintl.mnpspbd.com/a2p-wallet/api/v1/check-current-balance';
+        $this->sendSmsIPTSPUrl = 'https://api.mnpspbd.com/a2p-sms-iptsp/api/v1/send-sms';
+        $this->sendSmsMNOUrl = 'https://api.mnpspbd.com/a2p-sms/api/v1/send-sms';
+        $this->checkDeliveryMNOUrl = 'https://api.mnpspbd.com/a2p-proxy-api/api/v1/check-delivery-report';
+        $this->checkDeliveryIPTSPUrl = 'https://api.mnpspbd.com/a2p-proxy-api-iptsp/api/v1/check-delivery-report';
+        $this->checkAnsBalanceMNOUrl = 'https://api.mnpspbd.com/a2p-proxy-api/api/v1/check-credit-balance';
+        $this->checkAnsBalanceIPTSPUrl = 'https://api.mnpspbd.com/a2p-proxy-api-iptsp/api/v1/check-credit-balance';
+        $this->checkCliMNOUrl = 'https://api.mnpspbd.com/a2p-proxy-api/api/v1/check-cli';
+        $this->checkCpBalanceUrl = 'https://api.mnpspbd.com/a2p-wallet/api/v1/check-current-balance';
         
-        $this->client = new Http('https://a2papiintl.mnpspbd.com', verifySsl: false)->throwOnError(false);
+        $this->client = new Http('https://api.mnpspbd.com', verifySsl: false)->throwOnError(false);
         $this->hook = SmsHook::instance();
     }
 

@@ -36,11 +36,11 @@ $manager->register('infozillion', function(){
 
 // Configuration for Infozillion
 $config = [
-    'username' => '',
-    'password' => '',
-    'billMsisdn' => '',
-    'apiKey' => '',
-    'cli' => '',
+    'username' => 'GlobeWays',
+    'password' => 'g!0beW@y$',
+    'billMsisdn' => '8809612224567',
+    'apiKey' => 'io4jyxyDaiDCORTkClUL4nPXZ5qpjfMd',
+    'cli' => '8809612224567',
 ];
 
 echo "=== INFOZILLION SMS GATEWAY TESTS ===\n\n";
@@ -61,7 +61,7 @@ $smsIPTSP = new InfozillionSmsDTO([
     'billMsisdnSecondary' => null,
     'apiKey' => $config['apiKey'],
     'cli' => $config['cli'],
-    'msisdnList' => '01794263387',
+    'msisdnList' => '8801794263387',
     'transactionType' => 'T',
     'messageType' => '1',
     'isLongSMS' => null,
@@ -70,6 +70,9 @@ $smsIPTSP = new InfozillionSmsDTO([
 ]);
 
 $result = $manager->gateway('infozillion')->send($smsIPTSP);
+
+print_r($result);
+
 echo "Success: " . ($result->success ? 'Yes' : 'No') . "\n";
 echo "Message: " . $result->message . "\n";
 echo "Gateway Response: " . json_encode($result->response, JSON_PRETTY_PRINT) . "\n";
