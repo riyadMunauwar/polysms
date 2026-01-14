@@ -286,7 +286,7 @@ class Http
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $curlError = curl_error($ch);
-
+            
             if ($response === false) {
                 throw new HttpException("cURL error: {$curlError}");
             }
