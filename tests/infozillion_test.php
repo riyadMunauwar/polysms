@@ -32,12 +32,12 @@ $infozillion = $manager->gateway('infozillion');
 // -------------------------------------------------------------------------
 
 $config = [
-    'username'   => 'GlobeWays',
-    'password'   => 'g!0beW@y$',
-    'billMsisdn' => '8809612224567',
-    'apiKey'     => 'DAjzg8uF7Z2E4mTdDxsbECZ9z8lBKHpV',
-    'cli'        => '8809612224567',
-    'phone'      => '8801794263387',
+    'username'   => '',
+    'password'   => '',
+    'billMsisdn' => '',
+    'apiKey'     => '',
+    'cli'        => '',
+    'phone'      => '',
 ];
 
 echo "=== INFOZILLION SMS GATEWAY TESTS ===\n\n";

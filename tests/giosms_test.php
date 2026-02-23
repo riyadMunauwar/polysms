@@ -34,10 +34,10 @@ $giosms = $manager->gateway('giosms');
 // -------------------------------------------------------------------------
 
 $config = [
-    'api_token' => '1|oLfWXcTzQooHm6igvgxHb26O0ZdVhz7g3yDu68LG41503051',
-    'sender_id' => '8809612224567',
-    'phone'     => '01794263387',   // single recipient
-    'phones'    => '01794263387', // bulk
+    'api_token' => '',
+    'sender_id' => '',
+    'phone'     => '',   // single recipient
+    'phones'    => '', // bulk
 ];
 
 echo "=== GIOSMS GATEWAY TESTS ===\n\n";
