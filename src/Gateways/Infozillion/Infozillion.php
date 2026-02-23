@@ -103,7 +103,7 @@ class Infozillion extends AbstractGateway
         $this->checkCliMNOUrl = 'https://api.mnpspbd.com/a2p-proxy-api/api/v1/check-cli';
         $this->checkCpBalanceUrl = 'https://api.mnpspbd.com/a2p-wallet/api/v1/check-current-balance';
         
-        $this->client = new Http('https://api.mnpspbd.com', verifySsl: false)->throwOnError(false);
+        $this->client = new Http('https://api.mnpspbd.com')->throwOnError(false);
         $this->hook = SmsHook::instance();
     }
 
@@ -122,51 +122,198 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Get error message based on response code
-     * Checks both A2P and ANS error code mappings
+     * Determine whether a PROXY API response is successful.
+     * (checkDelivery, checkAnsBalance, checkCpBalance, checkCli)
      *
-     * @param string $code Response code
-     * @param string|null $fallbackMessage Fallback message if code not found
+     * These endpoints only have a single A2P layer — MNO codes are not
+     * returned at send-time, so we only validate serverResponseCode === 9000.
+     *
+     * @param array $response Decoded JSON response
+     * @return bool
+     */
+    private function isProxySuccessResponse(array $response): bool
+    {
+        if (!array_key_exists('serverResponseCode', $response)) {
+            return false;
+        }
+
+        return (int) $response['serverResponseCode'] === 9000;
+    }
+
+    /**
+     * Determine whether a SEND SMS response is a true end-to-end success.
+     *
+     * Two independent layers must both confirm success:
+     *
+     *   1. A2P / MNPSP layer  → serverResponseCode must be integer 9000
+     *   2. MNO / ANS layer    → mnoResponseCode must be integer/string 1000
+     *
+     * If the MNO layer is absent (null) — which is expected for Promotional
+     * SMS per the API spec — we do NOT fail the request; promotional sends
+     * are queued asynchronously and mnoTxnId/mnoResponseCode are always null.
+     * The caller must rely on checkDelivery() for final status in that case.
+     *
+     * For Transactional SMS the MNO layer is always populated synchronously,
+     * so a missing/non-1000 mnoResponseCode is a genuine failure.
+     *
+     * @param array  $response         Decoded JSON from send-sms endpoint
+     * @param string $transactionType  'T' for Transactional, 'P' for Promotional
+     * @return bool
+     */
+    private function isSendSuccessResponse(array $response, string $transactionType): bool
+    {
+        // Gate 1: A2P layer must be 9000
+        if (!array_key_exists('serverResponseCode', $response)) {
+            return false;
+        }
+
+        if ((int) $response['serverResponseCode'] !== 9000) {
+            return false;
+        }
+
+        // Gate 2: MNO layer — only validated for Transactional SMS.
+        // Promotional responses always return null MNO fields by design.
+        if (strtoupper($transactionType) === 'T') {
+            $mnoCode = $response['mnoResponseCode'] ?? null;
+
+            // Null MNO code on a transactional send means MNO never responded
+            if ($mnoCode === null) {
+                return false;
+            }
+
+            if ((int) $mnoCode !== 1000) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Build an error message that surfaces both A2P and MNO failure reasons.
+     *
+     * Priority:
+     *   - If A2P layer failed → report A2P error (MNO was never reached)
+     *   - If A2P passed but MNO failed → report MNO error with A2P context
+     *   - If both passed → return success message
+     *
+     * @param array $response Decoded JSON from send-sms endpoint
      * @return string
      */
-    private function getErrorMessageByCode(string $code, ?string $fallbackMessage = null): string
+    private function parseSendResponseMessage(array $response): string
     {
-        // Check A2P codes first (9xxx series)
+        $serverCode = array_key_exists('serverResponseCode', $response)
+            ? (string) $response['serverResponseCode']
+            : null;
+
+        $mnoCode = array_key_exists('mnoResponseCode', $response) && $response['mnoResponseCode'] !== null
+            ? (string) $response['mnoResponseCode']
+            : null;
+
+        // A2P layer failed — MNO was never reached
+        if ($serverCode !== null && (int) $serverCode !== 9000) {
+            $a2pMsg  = $this->getErrorMessageByCode($serverCode);
+            $rawMsg  = $response['serverResponseMessage'] ?? null;
+
+            return $rawMsg && $rawMsg !== $a2pMsg
+                ? $a2pMsg . ': ' . $rawMsg
+                : $a2pMsg;
+        }
+
+        // A2P passed but MNO layer returned an error
+        if ($mnoCode !== null && (int) $mnoCode !== 1000) {
+            $mnoMsg = $this->getErrorMessageByCode($mnoCode);
+            $rawMnoMsg = $response['mnoResponseMessage'] ?? null;
+
+            $detail = $rawMnoMsg && $rawMnoMsg !== $mnoMsg
+                ? $mnoMsg . ': ' . $rawMnoMsg
+                : $mnoMsg;
+
+            return 'MNO Error — ' . $detail;
+        }
+
+        // MNO code absent on a transactional send (gateway never responded)
+        if ($serverCode !== null && (int) $serverCode === 9000 && $mnoCode === null
+            && array_key_exists('mnoResponseCode', $response)
+        ) {
+            return 'MNO Error — No response received from MNO';
+        }
+
+        // Both layers OK (or promotional with null MNO fields)
+        return $this->getErrorMessageByCode($serverCode ?? '9000');
+    }
+
+    /**
+     * Get error message based on response code.
+     *
+     * Normalises the code to string before lookup so that integer codes
+     * (as returned by the real API) correctly resolve against the string-
+     * keyed constants arrays.
+     *
+     * Checks A2P (9xxx) codes first, then ANS (1xxx) codes.
+     *
+     * @param string|int $code    Response code (string or int)
+     * @param string|null $fallbackMessage Fallback if code is unrecognised
+     * @return string
+     */
+    private function getErrorMessageByCode(string|int $code, ?string $fallbackMessage = null): string
+    {
+        $code = (string) $code;
+
         if (isset(self::A2P_ERROR_MESSAGES[$code])) {
             return self::A2P_ERROR_MESSAGES[$code];
         }
-        
-        // Check ANS codes (1xxx series)
+
         if (isset(self::ANS_ERROR_MESSAGES[$code])) {
             return self::ANS_ERROR_MESSAGES[$code];
         }
-        
+
         return $fallbackMessage ?? 'Unknown error';
     }
 
     /**
-     * Parse response and return appropriate message
+     * Parse response and return a human-readable status message.
+     *
+     * When the server provides its own message AND it differs from our
+     * canonical mapping, both are joined so callers have full context.
      *
      * @param array $response API response
      * @return string
      */
     private function parseResponseMessage(array $response): string
     {
-        $code = $response['serverResponseCode'] ?? $response['code'] ?? null;
+        // Prefer serverResponseCode; fall back to a generic 'code' key if present
+        $code = array_key_exists('serverResponseCode', $response)
+            ? (string) $response['serverResponseCode']
+            : (array_key_exists('code', $response) ? (string) $response['code'] : null);
+
         $serverMessage = $response['serverResponseMessage'] ?? $response['message'] ?? null;
-        
-        if ($code) {
+
+        if ($code !== null) {
             $knownMessage = $this->getErrorMessageByCode($code);
-            
-            // If we have additional details from server, append them
+
             if ($serverMessage && $serverMessage !== $knownMessage) {
                 return $knownMessage . ': ' . $serverMessage;
             }
-            
+
             return $knownMessage;
         }
-        
+
         return $serverMessage ?? 'Unknown error';
+    }
+
+    /**
+     * Enable or disable SSL certificate verification.
+     *
+     * Disable only in local/dev environments against self-signed certs.
+     * Always keep enabled (default) in production.
+     *
+     *   $gateway->withToken($token)->verifySsl(false)->send($dto);
+     */
+    public function verifySsl(bool $verify): static
+    {
+        $this->client->setSslVerification($verify);
+        return $this;
     }
 
     public function send(BaseDTO $dto): SmsResult 
@@ -174,58 +321,59 @@ class Infozillion extends AbstractGateway
         $dto = $this->hook->applyFilters(Hook::BEFORE_SMS_SENT, $dto);
 
         $data = [
-            'username' => $dto->username,
-            'password' => $dto->password,
-            'billMsisdn' => $dto->billMsisdn,
-            'apiKey' => $dto->apiKey,
-            'cli' => $dto->cli,
-            'msisdnList' => $dto->msisdnList,
+            'username'        => $dto->username,
+            'password'        => $dto->password,
+            'billMsisdn'      => $dto->billMsisdn,
+            'apiKey'          => $dto->apiKey,
+            'cli'             => $dto->cli,
+            'msisdnList'      => $dto->msisdnList,
             'transactionType' => $dto->transactionType,
-            'messageType' => $dto->messageType,
-            'isLongSMS' => $dto?->isLongSMS,
-            'message' => $dto->message,
+            'messageType'     => $dto->messageType,
+            'isLongSMS'       => $dto?->isLongSMS,
+            'message'         => $dto->message,
         ];
 
-        if($dto?->usernameSecondary && $dto?->passwordSecondary && $dto?->billMsisdnSecondary){
-            $data['usernameSecondary'] = $dto?->usernameSecondary;
-            $data['passwordSecondary'] = $dto?->passwordSecondary;
-            $data['billMsisdnSecondary'] = $dto?->billMsisdnSecondary;
+        if ($dto?->usernameSecondary && $dto?->passwordSecondary && $dto?->billMsisdnSecondary) {
+            $data['usernameSecondary']    = $dto->usernameSecondary;
+            $data['passwordSecondary']    = $dto->passwordSecondary;
+            $data['billMsisdnSecondary']  = $dto->billMsisdnSecondary;
         }
 
-        if($dto?->campaignId){
-            $data['campaignId'] = $dto?->campaignId;
+        if ($dto?->campaignId) {
+            $data['campaignId'] = $dto->campaignId;
         }
 
         $smsSendApiUrl = $dto->type === 'iptsp' ? $this->sendSmsIPTSPUrl : $this->sendSmsMNOUrl;
 
         try {
-            $response = $this->client->request(endpoint: $smsSendApiUrl, method: 'POST', data: $data, contentType: 'application/json')->json();
+            $response = $this->client
+                ->request(endpoint: $smsSendApiUrl, method: 'POST', data: $data, contentType: 'application/json')
+                ->json();
 
-            if(($response['serverResponseCode'] ?? false) && $response['serverResponseCode'] != '9000'){
+            if (!$this->isSendSuccessResponse($response, $dto->transactionType)) {
                 return new SmsResult([
-                    'success' => false,
-                    'message' => $this->parseResponseMessage($response),
+                    'success'  => false,
+                    'message'  => $this->parseSendResponseMessage($response),
                     'response' => $response,
-                    'gateway' => $this->name(),
+                    'gateway'  => $this->name(),
                 ]);
             }
 
             $this->hook->doAction(Hook::AFTER_SMS_SENT);
 
             return new SmsResult([
-                'success' => true,
-                'message' => $this->parseResponseMessage($response),
+                'success'  => true,
+                'message'  => $this->parseSendResponseMessage($response),
                 'response' => $response,
-                'gateway' => $this->name(),
+                'gateway'  => $this->name(),
             ]);
- 
-        } catch(HttpException $ex) {
+
+        } catch (HttpException $ex) {
             return new SmsResult([
                 'success' => false,
                 'message' => 'HTTP Error: ' . $ex->getMessage(),
                 'gateway' => $this->name(),
             ]);
-
         } catch (\Exception $ex) {
             return new SmsResult([
                 'success' => false,
@@ -236,7 +384,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Check delivery report for sent SMS
+     * Check delivery report for sent SMS.
      *
      * @param InfozillionCheckDeliveryDTO $dto
      * @return SmsResult
@@ -244,18 +392,18 @@ class Infozillion extends AbstractGateway
     public function checkDelivery(InfozillionCheckDeliveryDTO $dto): SmsResult
     {
         $data = [
-            'username' => $dto->username,
-            'password' => $dto->password,
-            'billMsisdn' => $dto->billMsisdn,
-            'apiKey' => $dto->apiKey,
-            'msisdnList' => $dto->msisdnList,
+            'username'        => $dto->username,
+            'password'        => $dto->password,
+            'billMsisdn'      => $dto->billMsisdn,
+            'apiKey'          => $dto->apiKey,
+            'msisdnList'      => $dto->msisdnList,
             'serverReference' => $dto->serverReference,
         ];
 
-        if($dto?->usernameSecondary && $dto?->passwordSecondary && $dto?->billMsisdnSecondary){
-            $data['usernameSecondary'] = $dto?->usernameSecondary;
-            $data['passwordSecondary'] = $dto?->passwordSecondary;
-            $data['billMsisdnSecondary'] = $dto?->billMsisdnSecondary;
+        if ($dto?->usernameSecondary && $dto?->passwordSecondary && $dto?->billMsisdnSecondary) {
+            $data['usernameSecondary']   = $dto->usernameSecondary;
+            $data['passwordSecondary']   = $dto->passwordSecondary;
+            $data['billMsisdnSecondary'] = $dto->billMsisdnSecondary;
         }
 
         try {
@@ -263,23 +411,23 @@ class Infozillion extends AbstractGateway
                 ->request(endpoint: $this->checkDeliveryMNOUrl, method: 'POST', data: $data, contentType: 'application/json')
                 ->json();
 
-            if(($response['serverResponseCode'] ?? false) && $response['serverResponseCode'] != '9000'){
+            if (!$this->isProxySuccessResponse($response)) {
                 return new SmsResult([
-                    'success' => false,
-                    'message' => $this->parseResponseMessage($response),
+                    'success'  => false,
+                    'message'  => $this->parseResponseMessage($response),
                     'response' => $response,
-                    'gateway' => $this->name(),
+                    'gateway'  => $this->name(),
                 ]);
             }
 
             return new SmsResult([
-                'success' => true,
-                'message' => $this->parseResponseMessage($response),
+                'success'  => true,
+                'message'  => $this->parseResponseMessage($response),
                 'response' => $response,
-                'gateway' => $this->name(),
+                'gateway'  => $this->name(),
             ]);
 
-        } catch(HttpException $ex) {
+        } catch (HttpException $ex) {
             return new SmsResult([
                 'success' => false,
                 'message' => 'HTTP Error: ' . $ex->getMessage(),
@@ -295,7 +443,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Check ANS (MNO/IPTSP) balance
+     * Check ANS (MNO/IPTSP) balance.
      *
      * @param InfozillionCheckAnsBalanceDTO $dto
      * @return SmsResult
@@ -305,8 +453,8 @@ class Infozillion extends AbstractGateway
         $data = [
             'username' => $dto->username,
             'password' => $dto->password,
-            'mno' => $dto->mno,
-            'apiKey' => $dto->apiKey,
+            'mno'      => $dto->mno,
+            'apiKey'   => $dto->apiKey,
         ];
 
         try {
@@ -314,23 +462,23 @@ class Infozillion extends AbstractGateway
                 ->request(endpoint: $this->checkAnsBalanceMNOUrl, method: 'POST', data: $data, contentType: 'application/json')
                 ->json();
 
-            if(($response['serverResponseCode'] ?? false) && $response['serverResponseCode'] != '9000'){
+            if (!$this->isProxySuccessResponse($response)) {
                 return new SmsResult([
-                    'success' => false,
-                    'message' => $this->parseResponseMessage($response),
+                    'success'  => false,
+                    'message'  => $this->parseResponseMessage($response),
                     'response' => $response,
-                    'gateway' => $this->name(),
+                    'gateway'  => $this->name(),
                 ]);
             }
 
             return new SmsResult([
-                'success' => true,
-                'message' => $this->parseResponseMessage($response),
+                'success'  => true,
+                'message'  => $this->parseResponseMessage($response),
                 'response' => $response,
-                'gateway' => $this->name(),
+                'gateway'  => $this->name(),
             ]);
 
-        } catch(HttpException $ex) {
+        } catch (HttpException $ex) {
             return new SmsResult([
                 'success' => false,
                 'message' => 'HTTP Error: ' . $ex->getMessage(),
@@ -346,7 +494,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Check CP (Content Provider/Aggregator) balance
+     * Check CP (Content Provider/Aggregator) balance.
      *
      * @param InfozillionCheckCpBalanceDTO $dto
      * @return SmsResult
@@ -362,23 +510,23 @@ class Infozillion extends AbstractGateway
                 ->request(endpoint: $this->checkCpBalanceUrl, method: 'POST', data: $data, contentType: 'application/json')
                 ->json();
 
-            if(($response['serverResponseCode'] ?? false) && $response['serverResponseCode'] != '9000'){
+            if (!$this->isProxySuccessResponse($response)) {
                 return new SmsResult([
-                    'success' => false,
-                    'message' => $this->parseResponseMessage($response),
+                    'success'  => false,
+                    'message'  => $this->parseResponseMessage($response),
                     'response' => $response,
-                    'gateway' => $this->name(),
+                    'gateway'  => $this->name(),
                 ]);
             }
 
             return new SmsResult([
-                'success' => true,
-                'message' => $this->parseResponseMessage($response),
+                'success'  => true,
+                'message'  => $this->parseResponseMessage($response),
                 'response' => $response,
-                'gateway' => $this->name(),
+                'gateway'  => $this->name(),
             ]);
 
-        } catch(HttpException $ex) {
+        } catch (HttpException $ex) {
             return new SmsResult([
                 'success' => false,
                 'message' => 'HTTP Error: ' . $ex->getMessage(),
@@ -394,7 +542,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Check CLI availability status
+     * Check CLI availability status.
      *
      * @param InfozillionCheckCliDTO $dto
      * @return SmsResult
@@ -404,9 +552,9 @@ class Infozillion extends AbstractGateway
         $data = [
             'username' => $dto->username,
             'password' => $dto->password,
-            'mno' => $dto->mno,
-            'apiKey' => $dto->apiKey,
-            'cli' => $dto->cli,
+            'mno'      => $dto->mno,
+            'apiKey'   => $dto->apiKey,
+            'cli'      => $dto->cli,
         ];
 
         try {
@@ -414,23 +562,23 @@ class Infozillion extends AbstractGateway
                 ->request(endpoint: $this->checkCliMNOUrl, method: 'POST', data: $data, contentType: 'application/json')
                 ->json();
 
-            if(($response['serverResponseCode'] ?? false) && $response['serverResponseCode'] != '9000'){
+            if (!$this->isProxySuccessResponse($response)) {
                 return new SmsResult([
-                    'success' => false,
-                    'message' => $this->parseResponseMessage($response),
+                    'success'  => false,
+                    'message'  => $this->parseResponseMessage($response),
                     'response' => $response,
-                    'gateway' => $this->name(),
+                    'gateway'  => $this->name(),
                 ]);
             }
 
             return new SmsResult([
-                'success' => true,
-                'message' => $this->parseResponseMessage($response),
+                'success'  => true,
+                'message'  => $this->parseResponseMessage($response),
                 'response' => $response,
-                'gateway' => $this->name(),
+                'gateway'  => $this->name(),
             ]);
 
-        } catch(HttpException $ex) {
+        } catch (HttpException $ex) {
             return new SmsResult([
                 'success' => false,
                 'message' => 'HTTP Error: ' . $ex->getMessage(),
@@ -446,7 +594,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Helper method to check if response was successful
+     * Helper method to check if response was successful.
      *
      * @param SmsResult $result
      * @return bool
@@ -457,7 +605,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Get error message from result
+     * Get error message from result.
      *
      * @param SmsResult $result
      * @return string
@@ -468,7 +616,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Get gateway response data
+     * Get gateway response data.
      *
      * @param SmsResult $result
      * @return array|null
@@ -479,7 +627,7 @@ class Infozillion extends AbstractGateway
     }
 
     /**
-     * Get response code from result
+     * Get response code from result.
      *
      * @param SmsResult $result
      * @return string|null
@@ -487,97 +635,95 @@ class Infozillion extends AbstractGateway
     public function getResponseCode(SmsResult $result): ?string
     {
         $response = $this->getGatewayResponse($result);
-        return $response['serverResponseCode'] ?? $response['code'] ?? null;
+        if ($response === null) {
+            return null;
+        }
+
+        $code = $response['serverResponseCode'] ?? $response['code'] ?? null;
+        return $code !== null ? (string) $code : null;
     }
 
     /**
-     * Check if error is due to insufficient balance
-     * Works for both A2P (9003, 9004) and ANS (1008) error codes
+     * Check if error is due to insufficient balance.
+     * Covers A2P (9003, 9004) and ANS (1008) codes.
      *
      * @param SmsResult $result
      * @return bool
      */
     public function isInsufficientBalance(SmsResult $result): bool
     {
-        $code = $this->getResponseCode($result);
-        return in_array($code, ['9003', '9004', '1008']);
+        return in_array($this->getResponseCode($result), ['9003', '9004', '1008'], true);
     }
 
     /**
-     * Check if error is due to invalid credentials
-     * Works for both A2P (9002, 9005) and ANS (1002, 1003) error codes
+     * Check if error is due to invalid credentials.
+     * Covers A2P (9002, 9005) and ANS (1002, 1003) codes.
      *
      * @param SmsResult $result
      * @return bool
      */
     public function isInvalidCredentials(SmsResult $result): bool
     {
-        $code = $this->getResponseCode($result);
-        return in_array($code, ['9002', '9005', '1002', '1003']);
+        return in_array($this->getResponseCode($result), ['9002', '9005', '1002', '1003'], true);
     }
 
     /**
-     * Check if error is due to invalid CLI
-     * Works for both A2P (9008) and ANS (1006) error codes
+     * Check if error is due to invalid CLI.
+     * Covers A2P (9008) and ANS (1006) codes.
      *
      * @param SmsResult $result
      * @return bool
      */
     public function isInvalidCli(SmsResult $result): bool
     {
-        $code = $this->getResponseCode($result);
-        return in_array($code, ['9008', '1006']);
+        return in_array($this->getResponseCode($result), ['9008', '1006'], true);
     }
 
     /**
-     * Check if account is barred
-     * ANS error code 1007
+     * Check if account is barred.
+     * ANS error code 1007.
      *
      * @param SmsResult $result
      * @return bool
      */
     public function isAccountBarred(SmsResult $result): bool
     {
-        $code = $this->getResponseCode($result);
-        return $code === '1007';
+        return $this->getResponseCode($result) === '1007';
     }
 
     /**
-     * Check if IP is blacklisted
-     * Works for both A2P (9006) and ANS (1001) error codes
+     * Check if IP is blacklisted.
+     * Covers A2P (9006) and ANS (1001) codes.
      *
      * @param SmsResult $result
      * @return bool
      */
     public function isIpBlacklisted(SmsResult $result): bool
     {
-        $code = $this->getResponseCode($result);
-        return in_array($code, ['9006', '1001']);
+        return in_array($this->getResponseCode($result), ['9006', '1001'], true);
     }
 
     /**
-     * Check if message content is invalid
-     * Works for both A2P (9013, 9014) and ANS (1019) error codes
+     * Check if message content is invalid.
+     * Covers A2P (9013, 9014) and ANS (1019) codes.
      *
      * @param SmsResult $result
      * @return bool
      */
     public function isInvalidContent(SmsResult $result): bool
     {
-        $code = $this->getResponseCode($result);
-        return in_array($code, ['9013', '9014', '1019']);
+        return in_array($this->getResponseCode($result), ['9013', '9014', '1019'], true);
     }
 
     /**
-     * Check if limit is exceeded
-     * Works for A2P (9010) and ANS (1015, 1050, 1051, 1054) error codes
+     * Check if a limit has been exceeded.
+     * Covers A2P (9010) and ANS (1015, 1050, 1051, 1054) codes.
      *
      * @param SmsResult $result
      * @return bool
      */
     public function isLimitExceeded(SmsResult $result): bool
     {
-        $code = $this->getResponseCode($result);
-        return in_array($code, ['9010', '1015', '1050', '1051', '1054']);
+        return in_array($this->getResponseCode($result), ['9010', '1015', '1050', '1051', '1054'], true);
     }
 }
